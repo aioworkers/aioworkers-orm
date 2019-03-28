@@ -10,7 +10,7 @@ aioworkers = "*"
 
 pytest = "*"
 pytest-flake8 = "*"
-pytest-aiohttp = "*"
+pytest-aioworkers = "*"
 pytest-runner = "*"
 flake8-isort = "*"
 
