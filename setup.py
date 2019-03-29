@@ -8,12 +8,14 @@ version = __import__('aioworkers_orm').__version__
 
 requirements = [
     'aioworkers>=0.12.0',
+    'orm',
 ]
 
 test_requirements = [
+    'pyyaml',
     'pytest',
     'pytest-runner',
-    'pytest-aiohttp',
+    'pytest-aioworkers',
     'pytest-flake8',
     'flake8-isort',
 ]

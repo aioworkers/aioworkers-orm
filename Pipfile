@@ -5,14 +5,17 @@ name = "pypi"
 
 [packages]
 aioworkers = "*"
+orm = "*"
 
 [dev-packages]
 
+pyyaml = "*"
 pytest = "*"
 pytest-flake8 = "*"
 pytest-aioworkers = "*"
 pytest-runner = "*"
 flake8-isort = "*"
+ipython = "*"
 
 [requires]
 python_version = "3.7"
