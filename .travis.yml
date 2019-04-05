@@ -7,11 +7,11 @@ python:
 - 3.7
 
 install:
-- pip install -U pip setuptools
-- pip install pytest-runner
+  - pip install -U pip setuptools pipenv==2018.10.13
+  - pipenv install -d --skip-lock
 
 script:
-- python setup.py test
+  - PYTHONPATH=. pytest
 
 before_deploy:
 - echo "__version__ = '$(git describe --tags)'" > aioworkers_orm/version.py
