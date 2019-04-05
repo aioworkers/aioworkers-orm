@@ -4,11 +4,10 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-aioworkers = "*"
+aioworkers = {git = "https://github.com/aioworkers/aioworkers.git",ref = "d170580eb02ede6829ecc178b246a3f211081e08"}
 orm = "*"
 
 [dev-packages]
-
 pyyaml = "*"
 pytest = "*"
 pytest-flake8 = "*"
@@ -16,6 +15,8 @@ pytest-aioworkers = "*"
 pytest-runner = "*"
 flake8-isort = "*"
 ipython = "*"
+databases = "*"
+aiosqlite = "*"
 
 [requires]
 python_version = "3.7"
