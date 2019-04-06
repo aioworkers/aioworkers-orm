@@ -15,10 +15,9 @@ class Test(Model):
 
     @classmethod
     async def get_by_id_sql(cls, i):
-        sql = sqlalchemy.select([cls.__table__.c.id]).select_from(cls.__table__).where(
-            cls.__table__.c.id == i
-        )
-        o = await cls.db.fetch_one(query=sql)
+        t = cls.objects.table
+        sql = sqlalchemy.select([t.c.id]).select_from(t).where(t.c.id == i)
+        o = await cls.objects.database.fetch_one(query=sql)
         if not o:
             raise NoMatch()
         return cls.from_row(o)
