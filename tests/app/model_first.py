@@ -5,13 +5,9 @@ from orm import NoMatch
 from aioworkers_orm.models import Model
 
 
-class Test(Model):
-    __tablename__ = 'test'
+class ModelFirst(Model):
+    __tablename__ = 'model_first'
     id = orm.Integer(primary_key=True)
-
-    @classmethod
-    async def get_by_id(cls, i):
-        return await cls.objects.get(id=i)
 
     @classmethod
     async def get_by_id_sql(cls, i):

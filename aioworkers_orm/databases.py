@@ -20,14 +20,14 @@ class Database(AbstractConnector):
 
     def __init__(self, config=None, *, context=None, loop=None):
         super().__init__(config, context=context, loop=loop)
-        self._db = databases.Database(self.config.url)
+        self.db = databases.Database(self.config.url)
         for method_name in self.__bind_methods:
-            f = getattr(self._db, method_name)
+            f = getattr(self.db, method_name)
             if f:
                 setattr(self, method_name, f)
 
     async def connect(self):
-        await self._db.connect()
+        await self.db.connect()
 
     async def disconnect(self):
-        await self._db.disconnect()
+        await self.db.disconnect()
