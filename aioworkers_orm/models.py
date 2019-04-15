@@ -55,7 +55,7 @@ class Models(AbstractEntity):
             package_filter = filter_config.get('package')
             package_filter = package_filter + '.' if package_filter else package_filter
             module_filter = filter_config.get('module')
-            for model_id in AIOWorkersModelMetaClass.models.keys():
+            for model_id in AIOWorkersModelMetaClass.models:
                 *_, m, _ = model_id.split('.')
                 if package_filter and not model_id.startswith(package_filter):
                     continue
