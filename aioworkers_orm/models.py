@@ -1,6 +1,6 @@
 import orm
 import sqlalchemy
-from aioworkers.core.base import AbstractEntity
+from aioworkers.core.base import AbstractConnector
 from aioworkers.core.context import Context
 from orm.models import ModelMetaclass
 
@@ -34,15 +34,14 @@ class Model(orm.Model, metaclass=AIOWorkersModelMetaClass):
         return self.__context__
 
 
-class Models(AbstractEntity):
+class Models(AbstractConnector):
     def __init__(self, config=None, *, context=None, loop=None):
         super().__init__(config, context=context, loop=loop)
         self.database = None
         self.metadata = sqlalchemy.MetaData()
         self.__models = {}
-        self.context.on_stop.append(self.stop)
 
-    async def init(self):
+    async def connect(self):
         self.database = self.context[self.config.database]
 
         models_list = self.config.get('models', {})
@@ -62,6 +61,10 @@ class Models(AbstractEntity):
                 if module_filter and m != module_filter:
                     continue
                 self.add_model(model_id)
+
+    async def disconnect(self):
+        for model_cls in self.__models.values():
+            self.remove_model(model_cls)
 
     def add_model(self, model_id, name=None):
         cls = AIOWorkersModelMetaClass.models[model_id]
@@ -94,10 +97,6 @@ class Models(AbstractEntity):
             model_cls.__database__ = None
             model_cls.__pkname__ = None
             model_cls.__model_name__ = None
-
-    async def stop(self):
-        for model_cls in self.__models.values():
-            self.remove_model(model_cls)
 
     def __getitem__(self, item):
         if hasattr(self, item):
