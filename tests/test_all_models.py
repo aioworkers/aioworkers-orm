@@ -28,7 +28,7 @@ async def test_context_all_models(context):
 
 @pytest.mark.sqlite
 async def test_orm(context):
-    from .app.model_first import ModelFirst
+    from tests.app.first.models import ModelFirst
 
     o = await ModelFirst.objects.create(id=1)
     assert o

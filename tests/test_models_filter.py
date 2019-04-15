@@ -11,8 +11,8 @@ def config_yaml(db_url):
       cls: aioworkers_orm.models.Models
       database: db
       filter:
-        package: tests
-        module: models_second
+        package: tests.app.second
+        module: models
     """
 
 

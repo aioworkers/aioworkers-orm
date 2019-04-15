@@ -1,6 +1,7 @@
 import orm
 import sqlalchemy
 from aioworkers.core.base import AbstractEntity
+from aioworkers.core.context import Context
 from orm.models import ModelMetaclass
 
 from aioworkers_orm.utils import class_ref, convert_class_name
@@ -16,6 +17,7 @@ class AIOWorkersModelMetaClass(ModelMetaclass):
             return cls
 
         model_id = class_ref(cls)
+        cls.__model_id__ = model_id
         AIOWorkersModelMetaClass.models[model_id] = cls
 
         return cls
@@ -23,7 +25,9 @@ class AIOWorkersModelMetaClass(ModelMetaclass):
 
 class Model(orm.Model, metaclass=AIOWorkersModelMetaClass):
     __abstract__ = True
-    __context__ = None
+    __context__ = None  # type: Context
+    __model_id__ = None  # type: str
+    __model_name__ = None  # type: str
 
     @property
     def context(self):
@@ -36,13 +40,10 @@ class Models(AbstractEntity):
         self.database = None
         self.metadata = sqlalchemy.MetaData()
         self.__models = {}
+        self.context.on_stop.append(self.stop)
 
     async def init(self):
         self.database = self.context[self.config.database]
-
-        # import_config = self.config.get('import', {})
-        # if import_config:
-        #     import_modules(import_config.package, import_config.module)
 
         models_list = self.config.get('models', {})
         if models_list:
@@ -64,6 +65,8 @@ class Models(AbstractEntity):
 
     def add_model(self, model_id, name=None):
         cls = AIOWorkersModelMetaClass.models[model_id]
+        if hasattr(cls, '__table__') and cls.__table__ is not None:
+            raise ValueError('Model already bind to another metadata.')
         if not name:
             name = convert_class_name(cls.__name__)
         cls.__database__ = self.database.db
@@ -81,6 +84,20 @@ class Models(AbstractEntity):
         cls.__pkname__ = pkname
 
         self.__models[name] = cls
+        cls.__model_name__ = name
+
+    def remove_model(self, model_cls):
+        if model_cls.__table__ is not None:
+            self.metadata.remove(model_cls.__table__)
+            model_cls.__context__ = None
+            model_cls.__table__ = None
+            model_cls.__database__ = None
+            model_cls.__pkname__ = None
+            model_cls.__model_name__ = None
+
+    async def stop(self):
+        for model_cls in self.__models.values():
+            self.remove_model(model_cls)
 
     def __getitem__(self, item):
         if hasattr(self, item):

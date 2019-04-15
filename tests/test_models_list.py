@@ -10,7 +10,7 @@ def config_yaml(db_url):
     models:
       cls: aioworkers_orm.models.Models
       models:
-        first: tests.app.model_first.ModelFirst
+        first: tests.app.first.models.ModelFirst
       database: db
     """
 
