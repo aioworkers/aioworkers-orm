@@ -31,4 +31,6 @@ def sqlite_setup(context, db_url, db_name):
         p.unlink()
 
     engine = sqlalchemy.create_engine(db_url)
-    context.models.metadata.create_all(engine)
+    for i in dir(context):
+        if i.startswith('models'):
+            context[i].metadata.create_all(engine)
