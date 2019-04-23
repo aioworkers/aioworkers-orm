@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-aioworkers = {git = "https://github.com/aioworkers/aioworkers.git",ref = "d170580eb02ede6829ecc178b246a3f211081e08"}
+aioworkers = ">=0.13a2"
 orm = "*"
 
 [dev-packages]
