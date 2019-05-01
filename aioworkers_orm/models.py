@@ -2,9 +2,24 @@ import orm
 import sqlalchemy
 from aioworkers.core.base import AbstractConnector
 from aioworkers.core.context import Context
+from orm.fields import (Boolean, Date, DateTime, Float, ForeignKey, Integer, JSON, String, Text,
+                        Time)
 from orm.models import ModelMetaclass
 
 from aioworkers_orm.utils import class_ref, convert_class_name
+
+TYPES_MAP = {
+    'boolean': Boolean,
+    'integer': Integer,
+    'float': Float,
+    'string': String,
+    'text': Text,
+    'date': Date,
+    'time': Time,
+    'datetime': DateTime,
+    'json': JSON,
+    'foreignkey': ForeignKey,
+}
 
 
 class AIOWorkersModelMetaClass(ModelMetaclass):
@@ -41,13 +56,35 @@ class Models(AbstractConnector):
         self.metadata = sqlalchemy.MetaData()
         self.__models = {}
 
+    @staticmethod
+    def create_model(table, module, class_name, fields):
+        # Convert fields descriptions to ORM Fields
+        field_models = {}
+        for k, v in fields.items():
+            spec = dict(**v)
+            t = spec.pop('type')
+            cls = TYPES_MAP[t]
+            field_models[k] = cls(**spec)
+        c = AIOWorkersModelMetaClass.__new__(AIOWorkersModelMetaClass, class_name, (Model,), {
+            '__module__': module,
+            '__tablename__': table,
+            **field_models,
+        })
+        return class_ref(c)
+
     async def connect(self):
         self.database = self.context[self.config.database]
 
         models_list = self.config.get('models', {})
         if models_list:
-            for name, model_id in models_list.items():
-                self.add_model(model_id, name)
+            for name, model_spec in models_list.items():
+                if isinstance(model_spec, str):
+                    # specified just model id
+                    self.add_model(model_spec, name=name)
+                elif 'table' in model_spec:
+                    # specified custom model
+                    model_id = self.create_model(**model_spec)
+                    self.add_model(model_id, name)
         else:
             # Iterate over all the models
             filter_config = self.config.get('filter', {})
