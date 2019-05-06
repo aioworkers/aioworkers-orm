@@ -1,7 +1,5 @@
 import pytest
 
-from aioworkers_orm.models import AIOWorkersModelMetaClass
-
 
 @pytest.fixture
 def config_yaml(db_url):
@@ -26,8 +24,5 @@ def config_yaml(db_url):
 
 @pytest.mark.sqlite
 async def test_schema_models(context):
-    assert AIOWorkersModelMetaClass.models
-    assert 'app.models.First' in AIOWorkersModelMetaClass.models
-
     o = await context.models.first.objects.create(id=2)
     assert o

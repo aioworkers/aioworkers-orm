@@ -23,7 +23,7 @@ TYPES_MAP = {
 
 
 class AIOWorkersModelMetaClass(ModelMetaclass):
-    models = {}
+    __models__ = {}
 
     def __new__(mcls, name, bases, attrs) -> type:
         cls = super(ModelMetaclass, mcls).__new__(mcls, name, bases, attrs)
@@ -33,7 +33,7 @@ class AIOWorkersModelMetaClass(ModelMetaclass):
 
         model_id = class_ref(cls)
         cls.__model_id__ = model_id
-        AIOWorkersModelMetaClass.models[model_id] = cls
+        AIOWorkersModelMetaClass.__models__[model_id] = cls
 
         return cls
 
@@ -91,7 +91,7 @@ class Models(AbstractConnector):
             package_filter = filter_config.get('package')
             package_filter = package_filter + '.' if package_filter else package_filter
             module_filter = filter_config.get('module')
-            for model_id in AIOWorkersModelMetaClass.models:
+            for model_id in AIOWorkersModelMetaClass.__models__:
                 *_, m, _ = model_id.split('.')
                 if package_filter and not model_id.startswith(package_filter):
                     continue
@@ -104,7 +104,7 @@ class Models(AbstractConnector):
             self.remove_model(model_cls)
 
     def add_model(self, model_id, name=None):
-        cls = AIOWorkersModelMetaClass.models[model_id]
+        cls = AIOWorkersModelMetaClass.__models__[model_id]
         if hasattr(cls, '__table__') and cls.__table__ is not None:
             raise ValueError('Model already bind to another metadata.')
         if not name:
