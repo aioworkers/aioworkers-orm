@@ -2,38 +2,20 @@ import orm
 import sqlalchemy
 from aioworkers.core.base import AbstractConnector
 from aioworkers.core.context import Context
-from orm.fields import (Boolean, Date, DateTime, Float, ForeignKey, Integer, JSON, String, Text,
-                        Time)
 from orm.models import ModelMetaclass
 
-from aioworkers_orm.utils import class_ref, convert_class_name
-
-TYPES_MAP = {
-    'boolean': Boolean,
-    'integer': Integer,
-    'float': Float,
-    'string': String,
-    'text': Text,
-    'date': Date,
-    'time': Time,
-    'datetime': DateTime,
-    'json': JSON,
-    'foreignkey': ForeignKey,
-}
+from aioworkers_orm.registry import ModelsRegistry
+from aioworkers_orm.utils import convert_class_name
 
 
 class AIOWorkersModelMetaClass(ModelMetaclass):
-    __models__ = {}
-
     def __new__(mcls, name, bases, attrs) -> type:
         cls = super(ModelMetaclass, mcls).__new__(mcls, name, bases, attrs)
 
         if attrs.get('__abstract__'):
             return cls
 
-        model_id = class_ref(cls)
-        cls.__model_id__ = model_id
-        AIOWorkersModelMetaClass.__models__[model_id] = cls
+        ModelsRegistry.add_model(cls)
 
         return cls
 
@@ -56,22 +38,6 @@ class Models(AbstractConnector):
         self.metadata = sqlalchemy.MetaData()
         self.__models = {}
 
-    @staticmethod
-    def create_model(table, module, class_name, fields):
-        # Convert fields descriptions to ORM Fields
-        field_models = {}
-        for k, v in fields.items():
-            spec = dict(**v)
-            t = spec.pop('type')
-            cls = TYPES_MAP[t]
-            field_models[k] = cls(**spec)
-        c = AIOWorkersModelMetaClass.__new__(AIOWorkersModelMetaClass, class_name, (Model,), {
-            '__module__': module,
-            '__tablename__': table,
-            **field_models,
-        })
-        return class_ref(c)
-
     async def connect(self):
         self.database = self.context[self.config.database]
 
@@ -83,7 +49,7 @@ class Models(AbstractConnector):
                     self.add_model(model_spec, name=name)
                 elif 'table' in model_spec:
                     # specified custom model
-                    model_id = self.create_model(**model_spec)
+                    model_id = ModelsRegistry.create_model(**model_spec)
                     self.add_model(model_id, name)
         else:
             # Iterate over all the models
@@ -91,7 +57,7 @@ class Models(AbstractConnector):
             package_filter = filter_config.get('package')
             package_filter = package_filter + '.' if package_filter else package_filter
             module_filter = filter_config.get('module')
-            for model_id in AIOWorkersModelMetaClass.__models__:
+            for model_id in ModelsRegistry.ids():
                 *_, m, _ = model_id.split('.')
                 if package_filter and not model_id.startswith(package_filter):
                     continue
@@ -104,7 +70,7 @@ class Models(AbstractConnector):
             self.remove_model(model_cls)
 
     def add_model(self, model_id, name=None):
-        cls = AIOWorkersModelMetaClass.__models__[model_id]
+        cls = ModelsRegistry.get_model(model_id)
         if hasattr(cls, '__table__') and cls.__table__ is not None:
             raise ValueError('Model already bind to another metadata.')
         if not name:
