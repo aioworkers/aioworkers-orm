@@ -25,6 +25,8 @@ class ModelsRegistry:
     @classmethod
     def add_model(cls, model_cls):
         model_id = class_ref(model_cls)
+        if model_id in cls.__models__ or model_cls.__model_id__ is not None:
+            raise ValueError(f"{model_id} already in registry")
         model_cls.__model_id__ = model_id
         cls.__models__[model_id] = model_cls
 
@@ -50,7 +52,7 @@ class ModelsRegistry:
         if model_id in cls.__models__:
             model_cls = cls.__models__[model_id]
             return model_cls
-        raise AttributeError(f"Model {model_id} does not exist...")
+        raise ValueError(f"Model {model_id} does not exist...")
 
     @classmethod
     def models(cls):
