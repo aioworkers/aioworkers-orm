@@ -14,7 +14,7 @@ class AIOWorkersModelMetaClass(ModelMetaclass):
 
         if attrs.get('__abstract__'):
             return cls
-
+        # Register all models
         ModelsRegistry.add_model(cls)
 
         return cls
@@ -36,40 +36,73 @@ class Models(AbstractConnector):
         super().__init__(config, context=context, loop=loop)
         self.database = None
         self.metadata = sqlalchemy.MetaData()
-        self.__models = {}
+        self._models = {}
+        self._ids = set()
+        self._custom_names = {}
+
+    def init(self):
+        self.create_models()
+        self.search_models()
+        self.filter_models()
+
+    def create_models(self):
+        """
+        Get models specs and create dynamic models in registry
+        """
+        for name, model_spec in self.config.get('models', {}).items():
+            if 'table' in model_spec:
+                model_id = ModelsRegistry.create_model(**model_spec)
+                # Model spec which defined in models entity have to be bind to it.
+                self._ids.add(model_id)
+
+    def search_models(self):
+        """
+        Search models which can be bind.
+        """
+        models_config = self.config.get('models', {})
+        if not models_config:
+            # All models can be potentially bind to entity
+            self._ids.update(ModelsRegistry.ids())
+            return
+
+        for name, model_spec in models_config.items():
+            if isinstance(model_spec, str):
+                self._ids.add(model_spec)
+                self._custom_names[model_spec] = name
+
+    def filter_models(self):
+        """
+        Filter models according config
+        """
+        # Iterate over all the models
+        filter_config = self.config.get('filter', {})
+        package_filter = filter_config.get('package')
+        package_filter = package_filter + '.' if package_filter else package_filter
+        module_filter = filter_config.get('module')
+        for model_id in set(self._ids):
+            *_, m, _ = model_id.split('.')
+            if package_filter and not model_id.startswith(package_filter):
+                self._ids.remove(model_id)
+            if module_filter and m != module_filter:
+                self._ids.remove(model_id)
+
+    def bind_models(self):
+        """
+        Bind models to the models entity.
+        """
+        for model_id in self._ids:
+            name = self._custom_names.get(model_id)
+            self.bind_model(model_id, name=name)
 
     async def connect(self):
         self.database = self.context[self.config.database]
-
-        models_list = self.config.get('models', {})
-        if models_list:
-            for name, model_spec in models_list.items():
-                if isinstance(model_spec, str):
-                    # specified just model id
-                    self.add_model(model_spec, name=name)
-                elif 'table' in model_spec:
-                    # specified custom model
-                    model_id = ModelsRegistry.create_model(**model_spec)
-                    self.add_model(model_id, name)
-        else:
-            # Iterate over all the models
-            filter_config = self.config.get('filter', {})
-            package_filter = filter_config.get('package')
-            package_filter = package_filter + '.' if package_filter else package_filter
-            module_filter = filter_config.get('module')
-            for model_id in ModelsRegistry.ids():
-                *_, m, _ = model_id.split('.')
-                if package_filter and not model_id.startswith(package_filter):
-                    continue
-                if module_filter and m != module_filter:
-                    continue
-                self.add_model(model_id)
+        self.bind_models()
 
     async def disconnect(self):
-        for model_cls in self.__models.values():
+        for model_cls in self._models.values():
             self.remove_model(model_cls)
 
-    def add_model(self, model_id, name=None):
+    def bind_model(self, model_id, name=None):
         cls = ModelsRegistry.get_model(model_id)
         if hasattr(cls, '__table__') and cls.__table__ is not None:
             raise ValueError('Model already bind to another metadata.')
@@ -89,7 +122,7 @@ class Models(AbstractConnector):
         cls.__table__ = sqlalchemy.Table(cls.__tablename__, self.metadata, *columns)
         cls.__pkname__ = pkname
 
-        self.__models[name] = cls
+        self._models[name] = cls
         cls.__model_name__ = name
 
     def remove_model(self, model_cls):
@@ -107,7 +140,7 @@ class Models(AbstractConnector):
         return KeyError(item)
 
     def __getattr__(self, item):
-        if item in self.__models:
-            model_cls = self.__models[item]
+        if item in self._models:
+            model_cls = self._models[item]
             return model_cls
         raise AttributeError('%r has no attribute %r' % (self, item))
