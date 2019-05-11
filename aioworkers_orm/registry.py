@@ -24,7 +24,7 @@ class ModelsRegistry:
 
     @classmethod
     def add_model(cls, model_cls):
-        model_id = class_ref(model_cls)
+        model_id = cls.get_model_id(model_cls)
         if model_id in cls.__models__ or model_cls.__model_id__ is not None:
             raise ValueError(f"{model_id} already in registry")
         model_cls.__model_id__ = model_id
@@ -61,3 +61,7 @@ class ModelsRegistry:
     @classmethod
     def ids(cls):
         return cls.__models__.keys()
+
+    @classmethod
+    def get_model_id(cls, model_cls):
+        return class_ref(model_cls)
