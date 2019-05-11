@@ -6,7 +6,7 @@ def config_yaml(db_url):
     return f"""
     db:
       cls: aioworkers_orm.databases.Database
-      url: {db_url}
+      dsn: {db_url}
     models_first:
       cls: aioworkers_orm.models.Models
       database: db

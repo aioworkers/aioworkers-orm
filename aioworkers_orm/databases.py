@@ -20,7 +20,7 @@ class Database(AbstractConnector):
 
     def __init__(self, config=None, *, context=None, loop=None):
         super().__init__(config, context=context, loop=loop)
-        self.db = databases.Database(self.config.url)
+        self.db = databases.Database(self.config.dsn)
         for method_name in self.__bind_methods:
             f = getattr(self.db, method_name)
             if f:
