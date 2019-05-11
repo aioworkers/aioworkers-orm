@@ -40,7 +40,7 @@ class Models(AbstractConnector):
         self._ids = set()
         self._custom_names = {}
 
-    def init(self):
+    async def init(self):
         self.create_models()
         self.search_models()
         self.filter_models()
