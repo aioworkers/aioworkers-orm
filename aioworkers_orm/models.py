@@ -39,6 +39,7 @@ class Models(AbstractConnector):
         self._models = {}
         self._ids = set()
         self._custom_names = {}
+        self._registry = ModelsRegistry
 
     async def init(self):
         self.create_models()
@@ -51,7 +52,7 @@ class Models(AbstractConnector):
         """
         for name, model_spec in self.config.get('models', {}).items():
             if 'table' in model_spec:
-                model_id = ModelsRegistry.create_model(**model_spec)
+                model_id = self._registry.create_model(**model_spec)
                 # Model spec which defined in models entity have to be bind to it.
                 self._ids.add(model_id)
 
@@ -62,7 +63,7 @@ class Models(AbstractConnector):
         models_config = self.config.get('models', {})
         if not models_config:
             # All models can be potentially bind to entity
-            self._ids.update(ModelsRegistry.ids())
+            self._ids.update(self._registry.ids())
             return
 
         for name, model_spec in models_config.items():
@@ -103,7 +104,7 @@ class Models(AbstractConnector):
             self.remove_model(model_cls)
 
     def bind_model(self, model_id, name=None):
-        cls = ModelsRegistry.get_model(model_id)
+        cls = self._registry.get_model(model_id)
         if hasattr(cls, '__table__') and cls.__table__ is not None:
             raise ValueError('Model already bind to another metadata.')
         if not name:
