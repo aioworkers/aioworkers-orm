@@ -12,6 +12,10 @@ aioworkers-orm
   :target: https://pypi.python.org/pypi/aioworkers-orm
 
 
+An aioworkers plugin for orm_.
+
+.. _orm: https://github.com/encode/orm
+
 Development
 -----------
 
