@@ -4,8 +4,9 @@ from aioworkers.core.base import AbstractConnector
 from aioworkers.core.context import Context
 from orm.models import ModelMetaclass
 
+from aioworkers_orm.converter import Converter
 from aioworkers_orm.registry import ModelsRegistry
-from aioworkers_orm.utils import convert_class_name
+from aioworkers_orm.utils import class_ref, convert_class_name
 
 
 class AIOWorkersModelMetaClass(ModelMetaclass):
@@ -52,7 +53,8 @@ class Models(AbstractConnector):
         """
         for name, model_spec in self.config.get('models', {}).items():
             if 'table' in model_spec:
-                model_id = self._registry.create_model(**model_spec)
+                model_class = Converter.convert(model_spec)
+                model_id = class_ref(model_class)
                 # Model spec which defined in models entity have to be bind to it.
                 self._ids.add(model_id)
 
