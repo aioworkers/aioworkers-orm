@@ -15,4 +15,8 @@ def convert_class_name(name):
 
 
 def class_ref(cls: type):
+    """
+    >>> class_ref(int)
+    'builtins.int'
+    """
     return cls.__module__ + "." + cls.__name__
