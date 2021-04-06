@@ -13,7 +13,7 @@ class AIOWorkersModelMetaClass(ModelMetaclass):
     def __new__(mcls, name, bases, attrs) -> type:
         cls = super(ModelMetaclass, mcls).__new__(mcls, name, bases, attrs)
 
-        if attrs.get('__abstract__'):
+        if attrs.get("__abstract__"):
             return cls
         # Register all models
         ModelsRegistry.add_model(cls)
@@ -43,6 +43,7 @@ class Models(AbstractConnector):
         self._registry = ModelsRegistry
 
     async def init(self):
+        await super().init()
         self.create_models()
         self.search_models()
         self.filter_models()
@@ -51,8 +52,8 @@ class Models(AbstractConnector):
         """
         Get models specs and create dynamic models in registry
         """
-        for name, model_spec in self.config.get('models', {}).items():
-            if 'table' in model_spec:
+        for name, model_spec in self.config.get("models", {}).items():
+            if "table" in model_spec:
                 model_class = Converter.convert(model_spec)
                 model_id = class_ref(model_class)
                 # Model spec which defined in models entity have to be bind to it.
@@ -62,7 +63,7 @@ class Models(AbstractConnector):
         """
         Search models which can be bind.
         """
-        models_config = self.config.get('models', {})
+        models_config = self.config.get("models", {})
         if not models_config:
             # All models can be potentially bind to entity
             self._ids.update(self._registry.ids())
@@ -78,12 +79,12 @@ class Models(AbstractConnector):
         Filter models according config
         """
         # Iterate over all the models
-        filter_config = self.config.get('filter', {})
-        package_filter = filter_config.get('package')
-        package_filter = package_filter + '.' if package_filter else package_filter
-        module_filter = filter_config.get('module')
+        filter_config = self.config.get("filter", {})
+        package_filter = filter_config.get("package")
+        package_filter = package_filter + "." if package_filter else package_filter
+        module_filter = filter_config.get("module")
         for model_id in set(self._ids):
-            *_, m, _ = model_id.split('.')
+            *_, m, _ = model_id.split(".")
             if package_filter and not model_id.startswith(package_filter):
                 self._ids.remove(model_id)
             if module_filter and m != module_filter:
@@ -107,11 +108,11 @@ class Models(AbstractConnector):
 
     def bind_model(self, model_id, name=None):
         cls = self._registry.get_model(model_id)
-        if hasattr(cls, '__table__') and cls.__table__ is not None:
-            raise ValueError('Model already bind to another metadata.')
+        if hasattr(cls, "__table__") and cls.__table__ is not None:
+            raise ValueError("Model already bind to another metadata.")
         if not name:
             name = convert_class_name(cls.__name__)
-        cls.__database__ = self.database.db
+        cls.__database__ = self.database
         cls.__context__ = self.context
 
         pkname = None
@@ -146,4 +147,4 @@ class Models(AbstractConnector):
         if item in self._models:
             model_cls = self._models[item]
             return model_cls
-        raise AttributeError('%r has no attribute %r' % (self, item))
+        raise AttributeError("%r has no attribute %r" % (self, item))

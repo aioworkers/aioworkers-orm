@@ -106,4 +106,9 @@ venv.bak/
 # idea
 .idea
 
+# Poetry
+poetry.lock
+poetry.toml
+
+# Testing
 test.db.sqlite

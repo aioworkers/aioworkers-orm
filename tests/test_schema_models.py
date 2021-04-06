@@ -2,11 +2,11 @@ import pytest
 
 
 @pytest.fixture
-def config_yaml(db_url):
+def config_yaml(db_dsn):
     return f"""
     db:
-      cls: aioworkers_orm.databases.Database
-      dsn: {db_url}
+      cls: aioworkers_databases.database.Database
+      dsn: {db_dsn}
     models:
       cls: aioworkers_orm.models.Models
       models:

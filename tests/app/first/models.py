@@ -6,7 +6,7 @@ from aioworkers_orm.models import Model
 
 
 class ModelFirst(Model):
-    __tablename__ = 'model_first'
+    __tablename__ = "model_first"
     id = orm.Integer(primary_key=True)
 
     @classmethod

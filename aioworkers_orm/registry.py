@@ -5,13 +5,15 @@ class ModelsRegistry:
     """
     Global registry for all ORM models.
     """
+
     __models__ = {}
 
     @classmethod
     def add_model(cls, model_cls):
         from aioworkers_orm.models import Model
+
         if not issubclass(model_cls, Model):
-            raise ValueError(f"Model have to be subclass of aioworkers_orm.models.Model")
+            raise ValueError("Model have to be subclass of aioworkers_orm.models.Model")
 
         model_id = cls.get_model_id(model_cls)
         if model_id in cls.__models__ or model_cls.__model_id__ is not None:

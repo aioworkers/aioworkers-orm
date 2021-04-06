@@ -1,0 +1,44 @@
+[tool.poetry]
+name = "aioworkers-orm"
+version = "0.0.0"
+description = "Module to work with orm"
+authors = [
+    "Alexander Bogushov <abogushov@gmail.com>",
+]
+license = "Apache Software License 2.0"
+readme = "README.md"
+homepage = "https://github.com/aioworkers/aioworkers-orm"
+repository = "https://github.com/aioworkers/aioworkers-orm"
+
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Developers",
+]
+
+packages = [
+    { include = "aioworkers_orm" },
+]
+
+[tool.poetry.dependencies]
+python = "^3.6"
+orm = "^0.1.5"
+aioworkers-databases = "^0.1.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.2"
+pytest-aioworkers = "^0.3.0"
+PyYAML = "^5.4.1"
+pytest-black = "^0.3.12"
+pytest-flake8 = "^1.0.7"
+aiosqlite = "^0.17.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+addopts = "--flake8 --doctest-modules --black --strict-markers"
+testpaths = ["aioworkers_orm", "tests"]
+flake8-max-complexity = 10
+flake8-max-line-length = 99
+markers = ["sqlite"]
