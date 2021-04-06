@@ -20,9 +20,9 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.6"
+python = ">=3.6.1,<4.0"
 orm = "^0.1.5"
-aioworkers-databases = "^0.1.0"
+aioworkers-databases = "^0.1.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2"

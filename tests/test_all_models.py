@@ -10,21 +10,6 @@ def config_yaml(db_dsn):
     models:
       cls: aioworkers_orm.models.Models
       database: db
-    logging:
-      version: 1
-      disable_existing_loggers: false
-      root:
-        level: DEBUG
-        handlers: [console]
-      handlers:
-        console:
-          level: ERROR
-          class: logging.StreamHandler
-      loggers:
-        aioworkers_databases:
-          level: DEBUG
-          handlers: [console]
-          propagate: true
     """
 
 
