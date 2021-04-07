@@ -33,8 +33,16 @@ pytest-flake8 = "^1.0.7"
 aiosqlite = "^0.17.0"
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
+requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry-dynamic-versioning]
+enable = true
+# The pattern for git tag in pep440 format. It is the same as default but without the v prefix.
+pattern = "(?x)^(?P<base>\\d+\\.\\d+\\.\\d+)(-?((?P<stage>[a-zA-Z]+)\\.?(?P<revision>\\d+)?))?(\\+(?P<tagged_metadata>.+))?$"
+
+[tool.poetry-dynamic-versioning.substitution]
+enable = true
 
 [tool.pytest.ini_options]
 addopts = "--flake8 --doctest-modules --black --strict-markers"
