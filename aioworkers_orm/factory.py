@@ -36,7 +36,7 @@ class ModelFactory:
     }
 
     @classmethod
-    def create(cls, model_spec: dict, metadata: MetaData) -> Type:
+    def create(cls, model_spec: dict, metadata: MetaData) -> Type[Model]:
         fields = {}
         for k, v in model_spec["fields"].items():
             spec = dict(**v)
