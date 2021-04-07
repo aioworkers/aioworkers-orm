@@ -1,3 +1,7 @@
+from typing import Type
+from orm import Model
+from orm.models import ModelMetaclass
+
 from orm import (
     Boolean,
     Date,
@@ -10,11 +14,12 @@ from orm import (
     Text,
     Time,
 )
+from sqlalchemy import MetaData
 
 
-class Converter:
+class ModelFactory:
     """
-    Convert model spec to ORM model
+    Create ORM model by specification
     """
 
     types = {
@@ -31,24 +36,24 @@ class Converter:
     }
 
     @classmethod
-    def convert(cls, model_spec):
-        from aioworkers_orm.models import AIOWorkersModelMetaClass, Model
-
-        field_models = {}
+    def create(cls, model_spec: dict, metadata: MetaData) -> Type:
+        fields = {}
         for k, v in model_spec["fields"].items():
             spec = dict(**v)
             t = spec.pop("type")
             field_cls = cls.types[t]
-            field_models[k] = field_cls(**spec)
-        c = AIOWorkersModelMetaClass.__new__(
-            AIOWorkersModelMetaClass,
-            model_spec["class_name"],
+            fields[k] = field_cls(**spec)
+
+        model_cls = ModelMetaclass.__new__(
+            ModelMetaclass,
+            model_spec["name"],
             (Model,),
             {
-                "__module__": model_spec["module"],
+                "__module__": model_spec.get("module"),
                 "__tablename__": model_spec["table"],
-                **field_models,
+                "__metadata__": metadata,
+                **fields,
             },
         )
 
-        return c
+        return model_cls
