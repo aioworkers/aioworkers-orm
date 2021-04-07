@@ -12,7 +12,7 @@ def config_yaml(db_dsn):
       models:
         first:
           module: app.models
-          class_name: First
+          name: First
           table: sometable
           fields:
             id:

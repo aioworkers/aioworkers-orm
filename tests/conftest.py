@@ -28,7 +28,9 @@ def sqlite_setup(context, db_dsn, db_name):
     if p.exists():
         p.unlink()
 
+    # Create tables for test purposes for entities which name starts from "models"
     engine = sqlalchemy.create_engine(db_dsn)
     for i in dir(context):
         if i.startswith("models"):
-            context[i].metadata.create_all(engine)
+            for model in context[i]:
+                model.__table__.metadata.create_all(engine)

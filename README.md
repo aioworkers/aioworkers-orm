@@ -4,14 +4,19 @@
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/aioworkers-orm)](https://pypi.org/project/aioworkers-orm)
 [![PyPI](https://img.shields.io/pypi/v/aioworkers-orm)](https://pypi.org/project/aioworkers-orm)
 
-An aioworkers plugin for [orm](https://github.com/encode/orm):.
+An aioworkers plugin for [orm](https://github.com/encode/orm)
+to add `orm.Model` available via `aioworkers.core.context.Context`.
+
+Features:
+- Attach model by class reference.
+- Create model by specification.
 
 ## Development
 
 Install dev requirements:
 
 ```shell
-pipenv install --dev --skip-lock
+poetry install
 ```
 
 Run tests:
