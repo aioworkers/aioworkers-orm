@@ -11,8 +11,8 @@ def config_yaml(db_dsn):
       cls: aioworkers_orm.models.Models
       models:
         test: app.models.ModelTest
-        first: app.models.first.ModelFirst
-        second: app.models.second.ModelSecond
+        first: app.first.models.ModelFirst
+        second: app.second.models.ModelSecond
       database: db
     """
 
@@ -22,9 +22,12 @@ async def test_context_models_list(context):
     o = await context.models.test.objects.create(id=2)
     assert o
 
-    o = await context.models.model_first.objects.create(id=1)
+    o = await context.models.test.objects.all()
     assert o
-    o = await context.models.first.objects.get_by_id_sql(1)
+
+    o = await context.models.first.objects.create(id=1)
+    assert o
+    o = await context.models.first.get_by_id_sql(1)
     assert o
 
     o = await context.models.second.objects.create(id=1)
