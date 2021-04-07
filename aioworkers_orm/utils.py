@@ -20,3 +20,12 @@ def class_ref(cls: type):
     'builtins.int'
     """
     return cls.__module__ + "." + cls.__name__
+
+
+def expand_class_ref(cls_ref: str):
+    """
+    >>> expand_class_ref('test.test.Test')
+    ('test.test', 'Test')
+    """
+    parts = cls_ref.rpartition(".")
+    return parts[0], parts[-1]
