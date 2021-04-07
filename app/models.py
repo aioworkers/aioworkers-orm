@@ -1,8 +1,8 @@
 import orm
+from .meta import metadata
 
-from aioworkers_orm.models import Model
 
-
-class ModelTest(Model):
+class ModelTest(orm.Model):
     __tablename__ = "model_test"
+    __metadata__ = metadata
     id = orm.Integer(primary_key=True)

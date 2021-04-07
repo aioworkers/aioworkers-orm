@@ -1,10 +1,10 @@
 import orm
+from ..meta import metadata
 
-from aioworkers_orm.models import Model
 
-
-class ModelSecond(Model):
+class ModelSecond(orm.Model):
     __tablename__ = "model_second"
+    __metadata__ = metadata
     id = orm.Integer(primary_key=True)
 
     @classmethod

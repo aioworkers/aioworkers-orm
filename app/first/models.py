@@ -1,12 +1,12 @@
 import orm
 import sqlalchemy
 from orm import NoMatch
+from ..meta import metadata
 
-from aioworkers_orm.models import Model
 
-
-class ModelFirst(Model):
+class ModelFirst(orm.Model):
     __tablename__ = "model_first"
+    __metadata__ = metadata
     id = orm.Integer(primary_key=True)
 
     @classmethod
