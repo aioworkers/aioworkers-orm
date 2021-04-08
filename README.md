@@ -1,6 +1,7 @@
 # aioworkers-orm
 
 [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/aioworkers/aioworkers-orm/CI)](https://github.com/aioworkers/aioworkers-orm/actions?query=workflow%3ACI)
+[![codecov](https://codecov.io/gh/aioworkers/aioworkers-orm/branch/master/graph/badge.svg?token=r7WJwoHery)](https://codecov.io/gh/aioworkers/aioworkers-orm)
 [![PyPI](https://img.shields.io/pypi/v/aioworkers-orm)](https://pypi.org/project/aioworkers-orm)
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/aioworkers-orm)](https://pypi.org/project/aioworkers-orm)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/aioworkers-orm)](https://pypi.org/project/aioworkers-orm)
