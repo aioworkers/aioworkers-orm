@@ -39,7 +39,7 @@ class ModelFactory:
     def create(cls, model_spec: dict, metadata: MetaData) -> Type[Model]:
         fields = {}
         for k, v in model_spec["fields"].items():
-            spec = dict(**v)
+            spec = dict(v)
             t = spec.pop("type")
             field_cls = cls.types[t]
             fields[k] = field_cls(**spec)
