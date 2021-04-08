@@ -13,6 +13,7 @@ repository = "https://github.com/aioworkers/aioworkers-orm"
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
     "Intended Audience :: Developers",
+    "Framework :: AsyncIO",
 ]
 
 packages = [
