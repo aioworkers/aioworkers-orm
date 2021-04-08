@@ -32,5 +32,11 @@ async def test_context_models_list(context):
 
     o = await context.models.second.objects.create(id=1)
     assert o
-    o = await context.models.second.get_by_id(1)
+    o = await context.models["second"].get_by_id(1)
     assert o
+
+    with pytest.raises(KeyError):
+        context.models["wrong_model"]
+
+    with pytest.raises(AttributeError):
+        context.models.wrong_model
