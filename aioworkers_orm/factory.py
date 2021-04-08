@@ -38,11 +38,11 @@ class ModelFactory:
     @classmethod
     def create(cls, model_spec: dict, metadata: MetaData) -> Type[Model]:
         fields = {}
-        for k, v in model_spec["fields"].items():
-            spec = dict(v)
-            t = spec.pop("type")
-            field_cls = cls.types[t]
-            fields[k] = field_cls(**spec)
+        for field_name, field_spec in model_spec["fields"].items():
+            field_spec = dict(field_spec)
+            field_type = field_spec.pop("type")
+            field_cls = cls.types[field_type]
+            fields[field_name] = field_cls(**field_spec)
 
         model_cls = ModelMetaclass.__new__(
             ModelMetaclass,
