@@ -48,7 +48,7 @@ pattern = "(?x)^(?P<base>\\d+\\.\\d+\\.\\d+)(-?((?P<stage>[a-zA-Z]+)\\.?(?P<revi
 enable = true
 
 [tool.pytest.ini_options]
-addopts = "--flake8 --doctest-modules --black --strict-markers --cov=aioworkers_orm --cov-fail-under=90"
+addopts = "--flake8 --doctest-modules --black --strict-markers --cov=aioworkers_orm --cov-fail-under=95"
 testpaths = ["aioworkers_orm", "tests"]
 flake8-max-complexity = 10
 flake8-max-line-length = 99
