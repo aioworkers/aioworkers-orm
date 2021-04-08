@@ -1,9 +1,10 @@
 import re
+from typing import Tuple
 
 re_class_name = re.compile(r"([A-Z]*[a-z]*)")
 
 
-def convert_class_name(name):
+def convert_class_name(name: str) -> str:
     """
     >>> convert_class_name('ClassName')
     'class_name'
@@ -14,7 +15,7 @@ def convert_class_name(name):
     return "_".join(i.lower() for i in name_tokens if i)
 
 
-def class_ref(cls: type):
+def class_ref(cls: type) -> str:
     """
     >>> class_ref(int)
     'builtins.int'
@@ -22,7 +23,7 @@ def class_ref(cls: type):
     return cls.__module__ + "." + cls.__name__
 
 
-def expand_class_ref(cls_ref: str):
+def expand_class_ref(cls_ref: str) -> Tuple[str, str]:
     """
     >>> expand_class_ref('test.test.Test')
     ('test.test', 'Test')
